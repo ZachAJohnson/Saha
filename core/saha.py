@@ -30,7 +30,8 @@ def ΔU_SP(ionization_fractions, nn, Ti ): # Stewart-Pyat as written by Crowley 
     rj = get_rj(Zj, ne)
     Γj_array = get_Γj(Zj, Zp, rj, Ti)
     Λ_array = get_Λ(Γj_array)
-    return np.nan_to_num( - Ti/(2*Zp)*( (1 + Λ_array)**(2/3) - 1 ), nan=0)
+    # return np.nan_to_num( - Ti/(2*Zp)*( (1 + Λ_array)**(2/3) - 1 ), nan=0)
+    return np.nan_to_num( - Ti/(2*Zp)*( Λ_array*2/3), nan=0) # Fake weak-coupling version
 
 def get_Λ(Γj): # NOT Λ_tilde
     Λ = (3*Γj)**(3/2)

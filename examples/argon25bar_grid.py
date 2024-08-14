@@ -19,7 +19,7 @@ Ar_ionization_degeneracies = 2*Ar_J_ground_level + 1
 
 # Input: Number of ionizations
 Z = 18
-Ar25bar_plasma = plasma("Ar25bar", Z, Ar_ionization_energies_AU, Ar_ionization_degeneracies)
+Ar25bar_plasma = plasma("Ar25bar_weak-coupling_Δχ", Z, Ar_ionization_energies_AU, Ar_ionization_degeneracies)
 
 # Temperature density
 nn_AU_range = Ar_nn_invcc*invcc_to_AU * np.array([0.1, 5])  # 1/cc
