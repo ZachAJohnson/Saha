@@ -30,8 +30,7 @@ def ΔU_SP(ionization_fractions, nn, Ti ): # Stewart-Pyat as written by Crowley 
     rj = get_rj(Zj, ne)
     Γj_array = get_Γj(Zj, Zp, rj, Ti)
     Λ_array = get_Λ(Γj_array)
-    # return np.nan_to_num( - Ti/(2*Zp)*( (1 + Λ_array)**(2/3) - 1 ), nan=0)
-    return np.nan_to_num( - Ti/(2*Zp)*( Λ_array*2/3), nan=0) # Fake weak-coupling version
+    return np.nan_to_num( - Ti/(2*Zp)*( (1 + Λ_array)**(2/3) - 1 ), nan=0)
 
 def get_Λ(Γj): # NOT Λ_tilde
     Λ = (3*Γj)**(3/2)
@@ -57,10 +56,17 @@ def get_Zbar(ionization_fractions):
 
 
 def saha_equation(ne, T, Δε, degeneracy_ratio):
-    # Saha equation in atomic units
-    saha_ratio = degeneracy_ratio * 2*λD(T)**-3 * np.exp(- Δε / T) / ne
-    test = saha_ratio
-    return test#saha_ratio
+    """
+    The Saha equation in atomic units is:
+	
+	x_{i+1}/x_i = g_e/(n_e λth^{-3}) (g_{i+1}/g_i) e^{- (χ_{i+1} - χ_i)/T } 
+	
+	degeneracy factor g_i # g_e = 2
+	ionization energy χ_i
+	ionization fraction x_i # Normalize sum to 1 later
+	"""
+    saha_ratio = degeneracy_ratio * g_e * λD(T)**-3 * np.exp(- Δε / T) / ne
+    return saha_ratio
 
 def get_ionization_fractions(plasma, ionization_fractions, nn, T, IPD = True):
     Z, χ0_AU_array, g_degeneracy_array = plasma.Z, plasma.χ0_AU_array, plasma.g_degeneracy_array
