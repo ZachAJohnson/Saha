@@ -30,8 +30,7 @@ def ΔU_SP(ionization_fractions, nn, Ti ): # Stewart-Pyat as written by Crowley 
     rj = get_rj(Zj, ne)
     Γj_array = get_Γj(Zj, Zp, rj, Ti)
     Λ_array = get_Λ(Γj_array)
-    # return np.nan_to_num( - Ti/(2*Zp)*( (1 + Λ_array)**(2/3) - 1 ), nan=0)
-    return np.nan_to_num( - Ti/(2*Zp)*( Λ_array*2/3), nan=0) # Fake weak-coupling version
+    return np.nan_to_num( - Ti/(2*Zp)*( (1 + Λ_array)**(2/3) - 1 ), nan=0)
 
 def get_Λ(Γj): # NOT Λ_tilde
     Λ = (3*Γj)**(3/2)
@@ -56,34 +55,42 @@ def get_Zbar(ionization_fractions):
     return np.sum(ionization_fractions * Zj)
 
 
-def saha_equation(ne, T, Δε, degeneracy_ratio):
-    # Saha equation in atomic units
-    saha_ratio = degeneracy_ratio * 2*λD(T)**-3 * np.exp(- Δε / T) / ne
-    test = saha_ratio
-    return test#saha_ratio
+def saha_equation(ne, T, χ, degeneracy_ratio):
+	"""
+	The Saha equation in atomic units is:
+
+	x_{i+1}/x_i = g_e/(n_e λth^{-3}) (g_{i+1}/g_i) e^{- χ_{i+1}/T } 
+
+	degeneracy factor g_i # g_e = 2
+	ionization energy χ_i # energy required to ionize i+1 state from i state (no need to take difference) 
+	ionization fraction x_i # Normalize sum to 1 later
+	"""
+	g_e = 2
+	saha_ratio = degeneracy_ratio * g_e * λD(T)**-3 * np.exp(- χ / T) / ne
+	return saha_ratio
 
 def get_ionization_fractions(plasma, ionization_fractions, nn, T, IPD = True):
-    Z, χ0_AU_array, g_degeneracy_array = plasma.Z, plasma.χ0_AU_array, plasma.g_degeneracy_array
+	N_atoms = len(ionization_fractions)
+	N_ions = N_atoms-1
+	Z, χ0_AU_array, g_degeneracy_array = plasma.Z, plasma.χ0_AU_array, plasma.g_degeneracy_array
+	# Ionization Potential Depression model
+	if IPD==True:
+	    ipd_energies = ΔU_SP(ionization_fractions, nn, T )
+	else:
+	    ipd_energies = np.zeros_like(ionization_fractions)
 
-    N_atoms = len(ionization_fractions)
-    N_ions = N_atoms-1
+	χ_AU_array = χ0_AU_array[:N_atoms] + ipd_energies
 
-    unnormalized_fractions = [1]
-    ne = get_ne(nn, ionization_fractions)
-    for i in range(N_ions):
-        degeneracy_ratio = g_degeneracy_array[i + 1] / g_degeneracy_array[i]
-        if IPD==True:
-            ipd_energies = ΔU_SP(ionization_fractions, nn, T )
-        else:
-            ipd_energies = np.zeros_like(ionization_fractions)
-        χ_AU_array = χ0_AU_array[:N_atoms] + ipd_energies
-        χ_AU_difference = χ_AU_array[i+1] - χ_AU_array[i]
-        ionization_ratio = saha_equation(ne, T, χ_AU_difference, degeneracy_ratio) # n_{i+1}/n_{i}
-        unnormalized_fractions.append(ionization_ratio*unnormalized_fractions[-1])
+	unnormalized_fractions = [1]
+	ne = get_ne(nn, ionization_fractions)
+	for i in range(N_ions):
+	    degeneracy_ratio = g_degeneracy_array[i + 1] / g_degeneracy_array[i]
+	    ionization_ratio = saha_equation(ne, T, χ_AU_array[i+1], degeneracy_ratio) # n_{i+1}/n_{i}
+	    unnormalized_fractions.append(ionization_ratio*unnormalized_fractions[-1])
 
-    xi_array = unnormalized_fractions/np.sum(unnormalized_fractions)
-    return xi_array, χ_AU_array # ionization fractions and their energies
-    
+	xi_array = unnormalized_fractions/np.sum(unnormalized_fractions)
+	return xi_array, χ_AU_array # ionization fractions and their energies
+
 def calculate_ionization_fractions(plasma, nn, T, initial_guess = None, IPD = True, N_ions=None):
 	# Initial guess for ionization fractions (all neutral initially)
 	Z, χ0_AU_array, g_degeneracy_array = plasma.Z, plasma.χ0_AU_array, plasma.g_degeneracy_array

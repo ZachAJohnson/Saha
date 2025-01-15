@@ -9,7 +9,7 @@ from saha.core.saha import plasma
 
 nn_invcc_at_Pbar_TK = lambda Pbar, TK: Pbar*bar_to_AU/(TK*K_to_AU)*AU_to_invcc
 
-Xe_nn_invcc = nn_invcc_at_Pbar_TK(5, 290)
+Xe_nn_invcc = 1.2e20#nn_invcc_at_Pbar_TK(5, 290)
 Xe_TK_peak = 16.60952380952381e3 # 0 ns?
 
 # https://physics.nist.gov/cgi-bin/ASD/ie.pl?spectra=Ar&units=1&at_num_out=on&el_name_out=on&seq_out=on&shells_out=on&level_out=on&e_out=0&unc_out=on&biblio=on
@@ -23,10 +23,10 @@ Xe5bar = plasma("Xe5bar", Z, Xe_ionization_energies_AU, Xe_ionization_degeneraci
 
 # Temperature density
 nn_AU = Xe_nn_invcc*invcc_to_AU  # 1/cc
-T_AU = 16.5e3 * K_to_AU # Kelvin
+T_AU = 1.2*eV_to_AU#16.5e3 * K_to_AU # Kelvin
 
 # Calculate ionization fractions
-av_ionization, ionization_fractions, χ_energies = calculate_ionization_fractions(Xe5bar, nn_AU, T_AU, IPD=True)
+av_ionization, ionization_fractions, χ_energies = calculate_ionization_fractions(Xe5bar, nn_AU, T_AU, IPD=False)
 
 # Print the results
 for i, fraction in enumerate(ionization_fractions):

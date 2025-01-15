@@ -22,10 +22,10 @@ Z = 18
 Ar25bar_plasma = plasma("Ar25bar_weak-coupling_Δχ", Z, Ar_ionization_energies_AU, Ar_ionization_degeneracies)
 
 # Temperature density
-nn_AU_range = Ar_nn_invcc*invcc_to_AU * np.array([0.1, 5])  # 1/cc
-T_AU_range = Ar_TK_peak * K_to_AU * np.array([0.1, 5])# Kelvin
+nn_AU_range = Ar_nn_invcc*invcc_to_AU * np.array([0.9, 1.1])  # 1/cc
+T_AU_range = Ar_TK_peak * K_to_AU * np.array([0.5,2])# Kelvin
 
 # Calculate ionization fractions
 
-Ar25bar_table = saha_table(Ar25bar_plasma, nn_AU_range, T_AU_range, Nn=5, NT=10, N_ions = 6)
+Ar25bar_table = saha_table(Ar25bar_plasma, nn_AU_range, T_AU_range, Nn=5, NT=20, N_ions = 2)
 

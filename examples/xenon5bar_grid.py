@@ -22,10 +22,10 @@ Z = 54
 Xe5bar_plasma = plasma("Xe5bar", Z, Xe_ionization_energies_AU, Xe_ionization_degeneracies)
 
 # Temperature density
-nn_AU_range = Xe_nn_invcc*invcc_to_AU * np.array([0.1, 5])  # 1/cc
+nn_AU_range = Xe_nn_invcc*invcc_to_AU * np.array([0.9, 1.1])  # 1/cc
 T_AU_range = Xe_TK_peak * K_to_AU * np.array([0.1, 5])# Kelvin
 
 # Calculate ionization fractions
 
-Xe5bar_table = saha_table(Xe5bar_plasma, nn_AU_range, T_AU_range, Nn=20, NT=200, N_ions = 6)
+Xe5bar_table = saha_table(Xe5bar_plasma, nn_AU_range, T_AU_range, Nn=5, NT=20, N_ions = 2)
 
