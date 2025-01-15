@@ -27,5 +27,5 @@ T_AU_range = Ar_TK_peak * K_to_AU * np.array([0.1, 5])# Kelvin
 
 # Calculate ionization fractions
 
-Ar25bar_table = saha_table(Ar25bar_plasma, nn_AU_range, T_AU_range, Nn=20, NT=200, N_ions = 6)
+Ar25bar_table = saha_table(Ar25bar_plasma, nn_AU_range, T_AU_range, Nn=5, NT=10, N_ions = 6)
 
